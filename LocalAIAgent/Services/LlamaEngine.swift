@@ -118,8 +118,8 @@ final class LlamaEngine: @unchecked Sendable {
         }
 
         // Réinitialiser la mémoire KV et le sampler
-        let mem = llama_get_memory(ctx)
-        llama_memory_clear(mem, true)
+        llama_kv_self_clear(ctx)
+
         llama_sampler_reset(smp)
 
         // Construire le prompt avec le template du modèle
