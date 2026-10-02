@@ -270,7 +270,7 @@ struct PersonaView: View {
                             dismiss()
                         } label: {
                             HStack(spacing: 12) {
-                                Image(systemName: persona.icon.wrappedValue)
+                                Image(systemName: persona.icon)
                                     .font(.title2)
                                     .foregroundStyle(Color.accentColor)
                                     .frame(width: 32)
@@ -288,7 +288,7 @@ struct PersonaView: View {
 
                                 if viewModel.persona == persona {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(.accentColor)
+                                        .foregroundStyle(Color.accentColor)
                                 }
                             }
                         }
