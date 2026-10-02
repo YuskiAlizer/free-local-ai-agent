@@ -43,23 +43,16 @@ targets:
         CFBundleDisplayName: Agent IA Local
         CFBundleShortVersionString: "1.0"
         CFBundleVersion: "1"
-
         UILaunchScreen: {}
-
         UIColorName: ""
-
         NSMicrophoneUsageDescription: "Nécessaire pour la reconnaissance vocale — dicter vos messages à l'agent IA"
-
         NSSpeechRecognitionUsageDescription: "Nécessaire pour la reconnaissance vocale hors ligne"
-
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-
         UISupportedInterfaceOrientations~ipad:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-
         ITSAppUsesNonExemptEncryption: false
 
     dependencies:
@@ -81,13 +74,10 @@ schemes:
     build:
       targets:
         LocalAIAgent: all
-
     run:
       config: Debug
-
     test:
       config: Debug
       gatherCoverageData: false
-
     archive:
       config: Release
