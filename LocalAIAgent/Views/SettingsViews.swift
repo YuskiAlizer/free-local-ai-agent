@@ -272,7 +272,7 @@ struct PersonaView: View {
                             HStack(spacing: 12) {
                                 Image(systemName: persona.icon)
                                     .font(.title2)
-                                    .foregroundStyle(.accentColor)
+                                    .foregroundStyle(Color.accentColor)
                                     .frame(width: 32)
 
                                 VStack(alignment: .leading, spacing: 4) {
