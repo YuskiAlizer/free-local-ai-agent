@@ -8,7 +8,7 @@ final class LlamaEngine: @unchecked Sendable {
 
     private var model: OpaquePointer?
     private var context: OpaquePointer?
-    private var sampler: OpaquePointer?
+    private var sampler: UnsafeMutablePointer<llama_sampler>?
     private var modelPath: String?
     private var loadedModelInfo: ModelInfo?
 
