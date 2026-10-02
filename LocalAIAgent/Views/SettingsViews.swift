@@ -270,7 +270,7 @@ struct PersonaView: View {
                             dismiss()
                         } label: {
                             HStack(spacing: 12) {
-                                Image(systemName: persona.icon)
+                                Image(systemName: persona.icon.wrappedValue)
                                     .font(.title2)
                                     .foregroundStyle(Color.accentColor)
                                     .frame(width: 32)
