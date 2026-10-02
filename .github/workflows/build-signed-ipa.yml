@@ -1,0 +1,74 @@
+name: Build Signed IPA (Experimental)
+
+# ATTENTION: La signature sur GitHub Actions nécessite une configuration avancée
+# avec secrets GitHub (certificat .p12, provisioning profile, mot de passe).
+# Ce workflow ne fonctionnera PAS sans cette configuration.
+# Pour un IPA signé, il est recommandé d'utiliser build_signed_ipa.sh sur Mac
+# avec votre compte Apple configuré dans Xcode.
+#
+# Configuration des secrets GitHub requis:
+#   - APPLE_CERT_P12_BASE64: certificat .p12 en base64
+#   - APPLE_CERT_PASSWORD: mot de passe du certificat
+#   - APPLE_PROVISIONING_PROFILE_BASE64: provisioning profile en base64
+#   - APPLE_TEAM_ID: votre Team ID
+
+on:
+  workflow_dispatch:
+    inputs:
+      development_team:
+        description: "Apple Team ID (ex: ABC12345)"
+        required: true
+        type: string
+      bundle_id:
+        description: "Bundle ID (ex: com.moi.LocalAI)"
+        required: false
+        type: string
+        default: "com.localai.LocalAIAgent"
+      large_model:
+        description: "Inclure aussi le modèle Qwen 3 4B"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Afficher la version de Xcode
+        run: xcodebuild -version
+
+      - name: Installer XcodeGen
+        run: brew install xcodegen
+
+      - name: Télécharger le modèle préinstallé
+        run: |
+          if [ "${{ github.event.inputs.large_model }}" = "true" ]; then
+            ./scripts/download_bundled_models.sh --large
+          else
+            ./scripts/download_bundled_models.sh
+          fi
+
+      - name: Générer le projet Xcode
+        run: ./scripts/generate_xcode_project.sh
+
+      - name: Build l'IPA signé
+        env:
+          DEVELOPMENT_TEAM: ${{ github.event.inputs.development_team }}
+          BUNDLE_ID: ${{ github.event.inputs.bundle_id }}
+        run: ./scripts/build_signed_ipa.sh
+
+      - name: Afficher la taille de l'IPA
+        run: |
+          ls -lh dist/LocalAIAgent.ipa || ls -lh dist/*.ipa
+          echo "IPA signé généré avec succès"
+
+      - name: Uploader l'IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalAIAgent-signed-ipa
+          path: dist/*.ipa
+          retention-days: 30

@@ -1,0 +1,21 @@
+# Modèles GGUF (trop gros pour Git, téléchargés par CI/script)
+LocalAIAgent/BundledModels/*.gguf
+
+# Build artifacts
+dist/
+build/
+*.xcarchive
+*.ipa
+
+# Xcode (généré par XcodeGen)
+*.xcodeproj
+*.xcworkspace
+DerivedData/
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Package.resolved

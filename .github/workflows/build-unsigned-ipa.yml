@@ -1,0 +1,50 @@
+name: Build Unsigned IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      large_model:
+        description: "Inclure aussi le modèle Qwen 3 4B (~2.5 GB)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Afficher la version de Xcode
+        run: xcodebuild -version
+
+      - name: Installer XcodeGen
+        run: brew install xcodegen
+
+      - name: Télécharger le modèle préinstallé
+        run: |
+          if [ "${{ github.event.inputs.large_model }}" = "true" ]; then
+            ./scripts/download_bundled_models.sh --large
+          else
+            ./scripts/download_bundled_models.sh
+          fi
+
+      - name: Générer le projet Xcode
+        run: ./scripts/generate_xcode_project.sh
+
+      - name: Build l'IPA non signé
+        run: ./scripts/build_unsigned_ipa.sh
+
+      - name: Afficher la taille de l'IPA
+        run: |
+          ls -lh dist/LocalAIAgent-unsigned.ipa
+          echo "IPA généré avec succès"
+
+      - name: Uploader l'IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalAIAgent-unsigned-ipa
+          path: dist/LocalAIAgent-unsigned.ipa
+          retention-days: 30

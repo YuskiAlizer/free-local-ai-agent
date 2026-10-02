@@ -1,0 +1,62 @@
+# Codemagic — Build IPA cloud pour Windows/Linux/Mac
+#
+# Codemagic est un service CI/CD cloud pour mobile.
+# Free tier: 500 minutes/mois pour les dépôts publics GitHub.
+#
+# Usage:
+#   1. Connectez-vous sur https://codemagic.io avec votre compte GitHub
+#   2. Ajoutez ce dépôt
+#   3. Cliquez sur "Start new build"
+#   4. L'IPA sera disponible en téléchargement à la fin du build
+#
+# Alternative en ligne de commande (depuis n'importe quel OS):
+#   pip install codemagic-cli
+#   codemagic app-store-connect apps list
+#   codemagic build
+
+workflows:
+  unsigned-ipa:
+    name: Build IPA Non Signé
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    scripts:
+      - name: Installer XcodeGen
+        script: brew install xcodegen
+      - name: Télécharger le modèle préinstallé
+        script: ./scripts/download_bundled_models.sh
+      - name: Générer le projet Xcode
+        script: ./scripts/generate_xcode_project.sh
+      - name: Build l'IPA non signé
+        script: ./scripts/build_unsigned_ipa.sh
+    artifacts:
+      - dist/LocalAIAgent-unsigned.ipa
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+
+  signed-ipa:
+    name: Build IPA Signé
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      groups:
+        - apple_credentials  # Configuré dans Codemagic dashboard
+    scripts:
+      - name: Installer XcodeGen
+        script: brew install xcodegen
+      - name: Télécharger le modèle préinstallé
+        script: ./scripts/download_bundled_models.sh
+      - name: Générer le projet Xcode
+        script: ./scripts/generate_xcode_project.sh
+      - name: Build l'IPA signé
+        script: |
+          DEVELOPMENT_TEAM=$APPLE_TEAM_ID \
+          BUNDLE_ID=com.localai.LocalAIAgent \
+          ./scripts/build_signed_ipa.sh
+    artifacts:
+      - dist/*.ipa
+    publishing:
+      email:
+        recipients:
+          - user@example.com
