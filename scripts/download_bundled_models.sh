@@ -25,24 +25,46 @@ mkdir -p "$BUNDLED_DIR"
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-print_info()  { echo -e "${BLUE}ℹ $1${NC}"; }
-print_ok()    { echo -e "${GREEN}✓ $1${NC}"; }
-print_warn()  { echo -e "${YELLOW}⚠ $1${NC}"; }
+print_info() { echo -e "${BLUE}ℹ $1${NC}"; }
+print_ok() { echo -e "${GREEN}✓ $1${NC}"; }
+print_warn() { echo -e "${YELLOW}⚠ $1${NC}"; }
 
 # Définition des modèles
-declare -A MODEL_URLS
-MODEL_URLS["qwen3-0.6b"]="https://huggingface.co/bartowski/Qwen_Qwen3-0.6B-GGUF/resolve/main/Qwen_Qwen3-0.6B-Q4_K_M.gguf"
-MODEL_URLS["qwen3-4b"]="https://huggingface.co/bartowski/Qwen_Qwen3-4B-GGUF/resolve/main/Qwen_Qwen3-4B-Q4_K_M.gguf"
+# Compatible avec Bash 3.2 de macOS
+get_model_url() {
+    case "$1" in
+        qwen3-0.6b)
+            echo "https://huggingface.co/bartowski/Qwen_Qwen3-0.6B-GGUF/resolve/main/Qwen_Qwen3-0.6B-Q4_K_M.gguf"
+            ;;
+        qwen3-4b)
+            echo "https://huggingface.co/bartowski/Qwen_Qwen3-4B-GGUF/resolve/main/Qwen_Qwen3-4B-Q4_K_M.gguf"
+            ;;
+    esac
+}
 
-declare -A MODEL_NAMES
-MODEL_NAMES["qwen3-0.6b"]="Qwen_Qwen3-0.6B-Q4_K_M.gguf"
-MODEL_NAMES["qwen3-4b"]="Qwen_Qwen3-4B-Q4_K_M.gguf"
+get_model_name() {
+    case "$1" in
+        qwen3-0.6b)
+            echo "Qwen_Qwen3-0.6B-Q4_K_M.gguf"
+            ;;
+        qwen3-4b)
+            echo "Qwen_Qwen3-4B-Q4_K_M.gguf"
+            ;;
+    esac
+}
 
-declare -A MODEL_SIZES
-MODEL_SIZES["qwen3-0.6b"]="~440 MB"
-MODEL_SIZES["qwen3-4b"]="~2.5 GB"
+get_model_size() {
+    case "$1" in
+        qwen3-0.6b)
+            echo "~440 MB"
+            ;;
+        qwen3-4b)
+            echo "~2.5 GB"
+            ;;
+    esac
+}
 
 # Déterminer quels modèles installer
 MODELS_TO_INSTALL=("qwen3-0.6b")
@@ -60,9 +82,9 @@ echo ""
 
 # Télécharger chaque modèle
 for model_id in "${MODELS_TO_INSTALL[@]}"; do
-    url="${MODEL_URLS[$model_id]}"
-    filename="${MODEL_NAMES[$model_id]}"
-    size="${MODEL_SIZES[$model_id]}"
+    url="$(get_model_url "$model_id")"
+    filename="$(get_model_name "$model_id")"
+    size="$(get_model_size "$model_id")"
     dest="$BUNDLED_DIR/$filename"
 
     if [ -f "$dest" ]; then
@@ -84,6 +106,7 @@ for model_id in "${MODELS_TO_INSTALL[@]}"; do
         print_warn "Échec du téléchargement de $model_id"
         rm -f "$dest"
     fi
+
     echo ""
 done
 
